@@ -2,6 +2,7 @@ import Classes
 import tkinter as tk
 import tkinter.messagebox
 import tkinter.scrolledtext
+import ttkbootstrap
 
 
 mainWnd = tk.Tk(className= "Gestion d'emploi du temps")
@@ -16,7 +17,8 @@ def AjouterSeance():
     strDate = entreeDate.get().strip()
 
     if matiere != '' and strDate !='':
-        seance = Classes.Seance(0, matiere)
+        #seance = Classes.Seance(0, matiere)
+
         pass
 
 
