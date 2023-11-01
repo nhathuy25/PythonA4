@@ -17,7 +17,7 @@ licenses.grid(row = 1)
 
 #Create Tabs:
 my_notebook=tb.Notebook(root, bootstyle="primary")
-my_notebook.grid(row=2, padx=30)
+my_notebook.grid(row=2, padx=50, pady=30)
 
 tab1=tb.Frame(my_notebook)
 tab2=tb.Frame(my_notebook)
@@ -29,7 +29,7 @@ my_notebook.add(tab2, text="Supprimer une séance")
 
 #Fonctions:
 def AjouteSeance():
-    global col, combo_seance, r, date1
+    global col, combo_seance, r, date1, jour1
 
     pass
 
@@ -56,7 +56,7 @@ tb.Radiobutton(tab1, text="TP  ", bootstyle="secondary", variable=r, value=3, co
 lable_semaine=tb.Label(tab1, text="Saisir la semaine: ", font=('Arial', 11, 'italic'))
 lable_semaine.grid(row=4, pady=10)
 
-semaine1 = tb.Entry(tab1, bootstyle="primary")
+semaine1 = tb.Entry(tab1, bootstyle="secondary")
 semaine1.grid(row=4, column=1)
 
 lable_jour=tb.Label(tab1, text=" et le jour: ", font=('Arial', 11, 'italic'))

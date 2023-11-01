@@ -62,7 +62,7 @@ class jour(Enum):
     DIMANCHE = 7
 
 class Semaine:
-    def __init__(self, numS:int, jour:[6][3]):
+    def __init__(self, numS:int, jour:[3]):
         self.numS = numS
         self.jour=jour
 
