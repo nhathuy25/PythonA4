@@ -61,11 +61,10 @@ class jour(Enum):
     SAMEDI = 6
     DIMANCHE = 7
 
-class Date:
-    def __init__(self, numS:int, date:str, liste:[3]):
+class Semaine:
+    def __init__(self, numS:int, jour:[6][3]):
         self.numS = numS
-        self.date=date
-        self.list_seance=liste
+        self.jour=jour
 
     def __repr__(self):
         return f'Semaine: {str(self.numS)} Date: {self.date}, Seances: {self.list_seance}'
