@@ -9,11 +9,20 @@ root = tb.Window(themename= "cosmo")
 #App interface:
 root.title("Gestion d'emploi du temps")
 root.iconbitmap("./logo.png")
-root.geometry('800x500')
+root.geometry('900x500')
 
 #Copyright label
-licenses = tb.Label(text="Designed by Huy NGUYEN and Khoa VU - INSA CVL 2023", font=('Arial', 7, 'italic'))
+licenses = tb.Label(text="© Designed by Huy NGUYEN and Khoa VU - 4A INSA CVL 2023", font=('Times new roman', 10, 'italic'))
 licenses.grid(row = 1)
+
+###     INITIALISATION
+#Initialisation of 2D list called sem:
+sem = Classes.Semaine()
+
+#Import list of subjects:
+matieres = Classes.ListeDeMatiere()
+matieres.readFromCsv("./ListeDeMatiere.csv")
+
 
 #Create Tabs:
 my_notebook=tb.Notebook(root, bootstyle="primary")
@@ -21,16 +30,37 @@ my_notebook.grid(row=2, padx=50, pady=30)
 
 tab1=tb.Frame(my_notebook)
 tab2=tb.Frame(my_notebook)
+tab3=tb.Frame(my_notebook)
 
 my_notebook.add(tab1, text="Ajouter une séance")
 my_notebook.add(tab2, text="Supprimer une séance")
+my_notebook.add(tab3, text="Déplacer une séance")
 
 ### AJOUTER SEANCES
 
 #Fonctions:
-def AjouteSeance():
-    global col, combo_seance, r, date1, jour1
+def getIdSeance(nom:str):
+    for s in Classes.col.listeM:
+        if nom == s :
+            return Classes.col.listeM
 
+def checkType(id:int):
+    if id==1:
+        return 'CM'
+    elif id==2:
+        return 'TD'
+    else:
+        return 'TP'
+
+def AjouteSeance():
+    global  r, jour1, col, sem
+    #Pick up values:
+    mat = getIdSeance(combo_seance.get())       #mat is a integer define id of the seance
+    type = checkType(r.get())                   #type is a string ('CM', 'TD', 'TP')
+    num_seance= seance1.get()                   #number of the seance in the day
+
+    label1.config(text=f'{combo_seance.get()}')
+    tk.messagebox.showinfo(message=f"type: {type}, id: {mat}")
     pass
 
 #Add seance
@@ -59,17 +89,26 @@ lable_semaine.grid(row=4, pady=10)
 semaine1 = tb.Entry(tab1, bootstyle="secondary")
 semaine1.grid(row=4, column=1)
 
-lable_jour=tb.Label(tab1, text=" et le jour: ", font=('Arial', 11, 'italic'))
-lable_jour.grid(row=4, column=4)
+lable_jour=tb.Label(tab1, text=" le jour: ", font=('Arial', 11, 'italic'))
+lable_jour.grid(row=5)
 
 jour1=tb.Combobox(tab1, bootstyle='secondary', values=Classes.jour)
-jour1.grid(row=4, column=6)
+jour1.grid(row=5, column=1)
 
-button1 = tb.Button(tab1, text="Ajouter", bootstyle="primary")
-button1.grid(row=5, column=3, pady=10)
+lable_numSeance=tb.Label(tab1, text="et le numero de la seance: ", font=('Arial', 11, 'italic'))
+lable_numSeance.grid(row=6, pady=10)
+
+seance1=tb.Combobox(tab1, bootstyle="secondary", values=[1,2,3,4])
+seance1.grid(row=6, column=1)
+
+button1 = tb.Button(tab1, text="Ajouter", bootstyle="primary", command=lambda: AjouteSeance())
+button1.grid(row=7, column=3, pady=10)
 
 ###
-
+label1 = tb.Label(root, text=f'{combo_seance.get()}')
+label1.grid(row=8)
 
 
 root.mainloop()
+
+print(getIdSeance("Programmation C++"))

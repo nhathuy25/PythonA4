@@ -1,5 +1,7 @@
 from enum import Enum
-    
+import numpy as np
+import main
+
 class Seance:
     def __init__(self, id=0, nom=''):
         self.id=id
@@ -9,7 +11,7 @@ class Seance:
         return self.nom
 
 class Matiere(Seance):
-    def __init__(self, id=0, nom='',hCM=0):
+    def __init__(self, id:int, nom='', hCM=0):
         self.id = id
         self.nom = nom
         self.heureCM = hCM
@@ -18,8 +20,7 @@ class Matiere(Seance):
         return self.nom
 
     def stringForCsv(self):
-        #return self.nom+';'+str(self.heureTD)+';'+self(str.heureTP)
-        pass
+        return self.nom+';'+str(self.heureCM)
 
 class ListeDeMatiere:
     def __init__(self):
@@ -31,15 +32,14 @@ class ListeDeMatiere:
         line = file.readline()
         lineNumber = 1
         while line != '':
-            line = line.strip()
+            line = line.strip('"')
             if line!='' and line[0]!='#':
                 fields = line.split(';')
-
                 addMatiere = True
                 #them dieu kien de add Matiere!
 
                 if addMatiere:
-                    self.listeM.append(Matiere(id=fields[0], nom=fields[1], hCM=fields[2]))
+                    self.listeM.append(Matiere(id=int(fields[0]), nom=fields[1], hCM=int(fields[2])))
 
             line = file.readline()
             lineNumber+=1
@@ -62,9 +62,14 @@ class jour(Enum):
     DIMANCHE = 7
 
 class Semaine:
-    def __init__(self, numS:int, jour:[3]):
-        self.numS = numS
-        self.jour=jour
+    def __init__(self):
+        self.numS = []
+        for i in range(20): #There are 20 weeks
+            seances = []
+            for j in range(27): #There are 27 classes in a week
+                seances.append(Matiere(99,"",99))
+            self.numS.append(seances)
+
 
     def __repr__(self):
         return f'Semaine: {str(self.numS)} Date: {self.date}, Seances: {self.list_seance}'
@@ -73,4 +78,4 @@ class Semaine:
 col = ListeDeMatiere()
 col.readFromCsv('./ListeDeMatiere.csv')
 
-print(col)
+
