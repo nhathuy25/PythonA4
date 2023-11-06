@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 import numpy as np
 import main
 
@@ -21,6 +21,8 @@ class Matiere(Seance):
 
     def stringForCsv(self):
         return self.nom+';'+str(self.heureCM)
+
+
 
 class ListeDeMatiere:
     def __init__(self):
@@ -52,14 +54,7 @@ class ListeDeMatiere:
             s+=repr(mat)+'\n'
         return s
 
-class jour(Enum):
-    LUNDI = 1
-    MARDI = 2
-    MERCREDI = 3
-    JEUDI = 4
-    VENDREDI = 5
-    SAMEDI = 6
-    DIMANCHE = 7
+jours = ["Lundi", "Mardi", "Mecredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 
 class Semaine:
     def __init__(self):
@@ -78,4 +73,5 @@ class Semaine:
 col = ListeDeMatiere()
 col.readFromCsv('./ListeDeMatiere.csv')
 
+col1= ListeDeMatiere()
 

@@ -52,15 +52,20 @@ def checkType(id:int):
     else:
         return 'TP'
 
-def AjouteSeance():
-    global  r, jour1, col, sem
+def jourConverter(s:str):
+    index = Classes.jours.index(s)
+    return index + 1
+
+def ajouteSeance():
+    #global  r, jour1, col, sem
     #Pick up values:
-    mat = getIdSeance(combo_seance.get())       #mat is a integer define id of the seance
+    id_mat = getIdSeance(combo_seance.get())    #mat is a integer define id of the seance
     type = checkType(r.get())                   #type is a string ('CM', 'TD', 'TP')
     num_seance= seance1.get()                   #number of the seance in the day
+    jour = jourConverter(jour1.get())           #variable jour is a integer from 1 to 7
 
     label1.config(text=f'{combo_seance.get()}')
-    tk.messagebox.showinfo(message=f"type: {type}, id: {mat}")
+    tk.messagebox.showinfo(message=f"type: {type}, id: {id_mat}, jour: {jour}")
     pass
 
 #Add seance
@@ -92,7 +97,7 @@ semaine1.grid(row=4, column=1)
 lable_jour=tb.Label(tab1, text=" le jour: ", font=('Arial', 11, 'italic'))
 lable_jour.grid(row=5)
 
-jour1=tb.Combobox(tab1, bootstyle='secondary', values=Classes.jour)
+jour1=tb.Combobox(tab1, bootstyle='secondary', values=Classes.jours)
 jour1.grid(row=5, column=1)
 
 lable_numSeance=tb.Label(tab1, text="et le numero de la seance: ", font=('Arial', 11, 'italic'))
@@ -101,7 +106,7 @@ lable_numSeance.grid(row=6, pady=10)
 seance1=tb.Combobox(tab1, bootstyle="secondary", values=[1,2,3,4])
 seance1.grid(row=6, column=1)
 
-button1 = tb.Button(tab1, text="Ajouter", bootstyle="primary", command=lambda: AjouteSeance())
+button1 = tb.Button(tab1, text="Ajouter", bootstyle="primary", command=lambda: ajouteSeance())
 button1.grid(row=7, column=3, pady=10)
 
 ###
