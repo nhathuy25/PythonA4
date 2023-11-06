@@ -84,6 +84,7 @@ r = IntVar() #A continously changing variable keep track the value of the radiob
 def Clicked(value):
     tk.messagebox.showinfo(title="Radiobutton", message=f'{value} clicked')
 
+#Three radiobutton
 tb.Radiobutton(tab1, text="CM  ", bootstyle="secondary", variable=r, value=1, command=lambda: Clicked(r.get())).grid(row=3, column=5)
 tb.Radiobutton(tab1, text="TD  ", bootstyle="secondary", variable=r, value=2, command=lambda: Clicked(r.get())).grid(row=3, column=6)
 tb.Radiobutton(tab1, text="TP  ", bootstyle="secondary", variable=r, value=3, command=lambda: Clicked(r.get())).grid(row=3, column=7)
@@ -109,10 +110,11 @@ seance1.grid(row=6, column=1)
 button1 = tb.Button(tab1, text="Ajouter", bootstyle="primary", command=lambda: ajouteSeance())
 button1.grid(row=7, column=3, pady=10)
 
+#### Comment de compare
+
 ###
 label1 = tb.Label(root, text=f'{combo_seance.get()}')
 label1.grid(row=8)
-
 
 root.mainloop()
 
