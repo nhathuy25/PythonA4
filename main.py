@@ -15,7 +15,7 @@ root.geometry('900x500')
 licenses = tb.Label(text="© Designed by Huy NGUYEN and Khoa VU - 4A INSA CVL 2023", font=('Times new roman', 10, 'italic'))
 licenses.grid(row = 1)
 
-###     INITIALISATION
+###     INITIALISATION OF VARIABLES:
 #Initialisation of 2D list called sem:
 sem = Classes.Semaine()
 
@@ -38,11 +38,25 @@ my_notebook.add(tab3, text="Déplacer une séance")
 
 ### AJOUTER SEANCES
 
-#Fonctions:
+##Fonctions:
+
+#getIdSeance takes a string which is the name of seance and convert it to index of it in listM
 def getIdSeance(nom:str):
-    for s in Classes.col.listeM:
-        if nom == s :
-            return Classes.col.listeM
+    arr = []
+    for s in matieres.listeM:
+        arr.append(s)
+    for temp in arr:
+        if nom==str(temp):
+            return arr.index(temp)
+        else:
+            return 99
+
+def printSeances():
+    arr=[]
+    for s in matieres.listeM:
+        arr.append(s)
+    for temp in arr:
+        print(temp)
 
 def checkType(id:int):
     if id==1:
@@ -52,21 +66,25 @@ def checkType(id:int):
     else:
         return 'TP'
 
-def jourConverter(s:str):
+def convertJour(s:str):
     index = Classes.jours.index(s)
     return index + 1
 
 def ajouteSeance():
-    #global  r, jour1, col, sem
-    #Pick up values:
-    id_mat = getIdSeance(combo_seance.get())    #mat is a integer define id of the seance
-    type = checkType(r.get())                   #type is a string ('CM', 'TD', 'TP')
-    num_seance= seance1.get()                   #number of the seance in the day
-    jour = jourConverter(jour1.get())           #variable jour is a integer from 1 to 7
+###Pick up values:
+    #Check if any field is missing:
+    if combo_seance.get() != '' and r.get() != 0 and seance1.get() != 0 and jour1.get() != '':
+        id_matiere = getIdSeance(combo_seance.get())        #an integer define id of the seance
+        type_seance = checkType(r.get())                    #string ('CM', 'TD', 'TP')
+        num_seance= int(seance1.get())-1                    #number of the seance in the day
+        num_jour = convertJour(jour1.get())                 #an integer from 1 to 7 indicate from Monday to Sunday
+        num_semaine = int(semaine1.get())                              #number of week
+    #if one or more fields are missing, send error
+    else:
+        tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
 
-    label1.config(text=f'{combo_seance.get()}')
-    tk.messagebox.showinfo(message=f"type: {type}, id: {id_mat}, jour: {jour}")
-    pass
+    sem.numS[num_semaine][num_seance*num_jour]= Classes.Seance(id=id_matiere, hCM=10)
+    label1.config(text=f'{sem.numS[num_semaine][num_seance*num_jour]} ajoute! and nom {combo_seance.get()}')
 
 #Add seance
 lable_seance=tb.Label(tab1, text="Selecter la seance:", font=('Arial', 11, 'italic'))
@@ -82,7 +100,8 @@ lable_radio.grid(row=3,column=4, padx=30)
 r = IntVar() #A continously changing variable keep track the value of the radiobuttons
 
 def Clicked(value):
-    tk.messagebox.showinfo(title="Radiobutton", message=f'{value} clicked')
+    #tk.messagebox.showinfo(title="Radiobutton", message=f'{value} clicked')
+    pass
 
 tb.Radiobutton(tab1, text="CM  ", bootstyle="secondary", variable=r, value=1, command=lambda: Clicked(r.get())).grid(row=3, column=5)
 tb.Radiobutton(tab1, text="TD  ", bootstyle="secondary", variable=r, value=2, command=lambda: Clicked(r.get())).grid(row=3, column=6)
@@ -109,11 +128,14 @@ seance1.grid(row=6, column=1)
 button1 = tb.Button(tab1, text="Ajouter", bootstyle="primary", command=lambda: ajouteSeance())
 button1.grid(row=7, column=3, pady=10)
 
-###
-label1 = tb.Label(root, text=f'{combo_seance.get()}')
+### Testing
+label1=tb.Label(bootstyle='secondary')
 label1.grid(row=8)
-
 
 root.mainloop()
 
-print(getIdSeance("Programmation C++"))
+print(getIdSeance("MAEL"))
+printSeances()
+#print(combo_seance)
+#sem.numS[1][0] = Classes.Seance(id=1, hCM=2)
+print(sem.numS[1][0])

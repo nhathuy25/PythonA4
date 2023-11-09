@@ -2,15 +2,9 @@ from enum import Enum, auto
 import numpy as np
 import main
 
-class Seance:
-    def __init__(self, id=0, nom=''):
-        self.id=id
-        self.nom=nom
 
-    def  __repr__(self):
-        return self.nom
 
-class Matiere(Seance):
+class Matiere:
     def __init__(self, id:int, nom='', hCM=0):
         self.id = id
         self.nom = nom
@@ -22,7 +16,13 @@ class Matiere(Seance):
     def stringForCsv(self):
         return self.nom+';'+str(self.heureCM)
 
+class Seance(Matiere):
+    def __init__(self, id:int, hCM:int):
+        self.id=id
+        self.hCM=hCM
 
+    def  __repr__(self):
+        return f'ID: {self.id}, hCM: {self.hCM}'
 
 class ListeDeMatiere:
     def __init__(self):
@@ -62,7 +62,7 @@ class Semaine:
         for i in range(20): #There are 20 weeks
             seances = []
             for j in range(27): #There are 27 classes in a week
-                seances.append(Matiere(99,"",99))
+                seances.append(Seance(99,""))
             self.numS.append(seances)
 
 
