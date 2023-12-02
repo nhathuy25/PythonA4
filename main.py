@@ -17,7 +17,7 @@ licenses.grid(row = 1)
 
 ###     INITIALISATION OF VARIABLES:
 #Initialisation of 2D list called sem:
-sem = Classes.Semaine()
+#sem = Classes.Semaine()
 
 #Import list of subjects:
 matieres = Classes.ListeDeMatiere()
@@ -43,14 +43,17 @@ my_notebook.add(tab3, text="Déplacer une séance")
 #getIdSeance takes a string which is the name of seance and convert it to index of it in listM
 def getIdSeance(nom:str):
     arr = []
+    founded = False
     for s in matieres.listeM:
         arr.append(s)
     for temp in arr:
         if nom==str(temp):
+            founded = True
             return arr.index(temp)
-        else:
-            return 99
+    if founded == False:
+        return 99
 
+#Function printSeances allows us to print out all the existing matiere
 def printSeances():
     arr=[]
     for s in matieres.listeM:
@@ -58,6 +61,7 @@ def printSeances():
     for temp in arr:
         print(temp)
 
+#Function checkType: since the input value of type (CM, TD, TP) is originally an integer, we need to convert it to a variable type string
 def checkType(id:int):
     if id==1:
         return 'CM'
@@ -66,25 +70,31 @@ def checkType(id:int):
     else:
         return 'TP'
 
+#Function convertJour allows us to convert string ('Lundi', 'Mardi',..) to an integer variable marked 1,2,3,4,5,6,7
 def convertJour(s:str):
     index = Classes.jours.index(s)
     return index + 1
 
+#Function ajouteSeance (IMPORTANT) is served to take all the data from API and stocked into a .csv file the new class information
 def ajouteSeance():
 ###Pick up values:
     #Check if any field is missing:
     if combo_seance.get() != '' and r.get() != 0 and seance1.get() != 0 and jour1.get() != '':
         id_matiere = getIdSeance(combo_seance.get())        #an integer define id of the seance
         type_seance = checkType(r.get())                    #string ('CM', 'TD', 'TP')
-        num_seance= int(seance1.get())-1                    #number of the seance in the day
+        num_seance= int(seance1.get())                      #number of the seance in the day
         num_jour = convertJour(jour1.get())                 #an integer from 1 to 7 indicate from Monday to Sunday
-        num_semaine = int(semaine1.get())                              #number of week
+        num_semaine = int(semaine1.get())                   #number of week
     #if one or more fields are missing, send error
     else:
         tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
 
-    sem.numS[num_semaine][num_seance*num_jour]= Classes.Seance(id=id_matiere, hCM=10)
-    label1.config(text=f'{sem.numS[num_semaine][num_seance*num_jour]} ajoute! and nom {combo_seance.get()}')
+    #Write the input class to a new file csv called: 'ListeSeances.csv'
+    nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour, numSeance=num_seance)
+
+    nouveau_seance.writeToCsv('./ListeSeances.csv')
+
+    #label1.config(text=f'{sem.numS[num_semaine][num_seance*num_jour]} ajoute! and nom {combo_seance.get()}')
 
 #Add seance
 lable_seance=tb.Label(tab1, text="Selecter la seance:", font=('Arial', 11, 'italic'))
@@ -129,7 +139,7 @@ button1 = tb.Button(tab1, text="Ajouter", bootstyle="primary", command=lambda: a
 button1.grid(row=7, column=3, pady=10)
 
 ### Testing
-label1=tb.Label(bootstyle='secondary')
+label1=tb.Label(bootstyle='success')
 label1.grid(row=8)
 
 root.mainloop()
@@ -138,4 +148,3 @@ print(getIdSeance("MAEL"))
 printSeances()
 #print(combo_seance)
 #sem.numS[1][0] = Classes.Seance(id=1, hCM=2)
-print(sem.numS[1][0])

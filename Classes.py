@@ -1,8 +1,6 @@
 from enum import Enum, auto
 import numpy as np
-import main
-
-
+import csv
 
 class Matiere:
     def __init__(self, id:int, nom='', hCM=0):
@@ -16,10 +14,29 @@ class Matiere:
     def stringForCsv(self):
         return self.nom+';'+str(self.heureCM)
 
-class Seance(Matiere):
-    def __init__(self, id:int, hCM:int):
+class Seance:
+    def __init__(self, id:int, type:str, numSemaine:int, numJour:int, numSeance:int):
         self.id=id
-        self.hCM=hCM
+        self.type=type
+        self.numSemaine=numSemaine
+        self.numJour=numJour
+        self.numSeance=numSeance
+
+    def stringForCsv(self):
+        return [self.id, self.type, self.numSemaine, self.numJour, self.numSeance]
+
+    def writeToCsv(self, filename):
+        #Write a new line of class into the file
+        with open(filename, 'a', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile, delimiter=';')
+            csv_writer.writerow(self.stringForCsv())
+        #After that, remove the existing hour of the class base on the type (CM, TD, TP)
+        with open('./ListeDeMatiere.csv','a')
+
+    #Function verifySeance: to verify the condition before adding a class to csv, including whether the time table is free
+    #or not at the moment; is the new added class conflicts the hierachy of CM > TD > TP?
+    def verifySeance(self):
+        pass
 
     def  __repr__(self):
         return f'ID: {self.id}, hCM: {self.hCM}'
