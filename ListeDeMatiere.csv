@@ -1,5 +1,5 @@
 #Input for classes
-"0;Mécanique des millieux continus;10;"
-"1;Programmation C++;10;"
-"2;Résistance des máteriaux;20;"
-"3;MAEL;8;"
+"0;Mécanique des millieux continus;10;15;20;"
+"1;Programmation C++;10;15;20;"
+"2;Résistance des máteriaux;20;25;30;"
+"3;MAEL;8;10;12;"

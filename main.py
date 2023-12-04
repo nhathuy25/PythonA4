@@ -22,7 +22,7 @@ licenses.grid(row = 1)
 #Import list of subjects:
 matieres = Classes.ListeDeMatiere()
 matieres.readFromCsv("./ListeDeMatiere.csv")
-
+matieres.updateActualList('./ListeSeances.csv')
 
 #Create Tabs:
 my_notebook=tb.Notebook(root, bootstyle="primary")
@@ -88,13 +88,28 @@ def ajouteSeance():
     #if one or more fields are missing, send error
     else:
         tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
+    addSeance = True
 
-    #Write the input class to a new file csv called: 'ListeSeances.csv'
-    nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour, numSeance=num_seance)
 
-    nouveau_seance.writeToCsv('./ListeSeances.csv')
+    if addSeance:
+        #Write the input class to a new file csv called: 'ListeSeances.csv'
+        nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour, numSeance=num_seance)
+        nouveau_seance.writeToCsv('./ListeSeances.csv')\
+        #Then, update the actual hour of the subject left by referencing the id of the subject:
+        for mat in matieres.listeM:
+            if nouveau_seance.id == mat.id:
+                if nouveau_seance.type == 'CM':
+                    mat.heureCM -= 2
+                #Similarly to other type of class
+                if nouveau_seance.type == 'TD':
+                    mat.heureTD -= 2
+                if nouveau_seance.type == 'TP':
+                    mat.heureTP -= 2
 
-    #label1.config(text=f'{sem.numS[num_semaine][num_seance*num_jour]} ajoute! and nom {combo_seance.get()}')
+    num = int(nouveau_seance.id)
+
+
+    label1.config(text=f'{nouveau_seance.id} added! {matieres.listeM[num].heureCM}; {matieres.listeM[num].heureTD}; {matieres.listeM[num].heureTP}')
 
 #Add seance
 lable_seance=tb.Label(tab1, text="Selecter la seance:", font=('Arial', 11, 'italic'))
