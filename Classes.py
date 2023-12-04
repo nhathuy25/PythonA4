@@ -2,6 +2,12 @@ from enum import Enum, auto
 import numpy as np
 import csv
 
+class TypeDeClass:
+    def __init__(self, id_TD=0, id_TP=0):
+        self.id_TD = id_TD
+        self.id_TP = id_TP
+
+
 class Matiere:
     def __init__(self, id:int, nom='', heureCM=0, heureTD=0, heureTP=0):
         self.id = id
@@ -32,11 +38,11 @@ class Seance:
         with open(filename, 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile, delimiter=';')
             csv_writer.writerow(self.stringForCsv())
-        #After that, remove the existing hour of the class base on the type (CM, TD, TP)
+        # - After that, remove the existing hour of the class base on the type (CM, TD, TP)
 
 
-    #Function verifySeance: to verify the condition before adding a class to csv, including whether the time table is free
-    #or not at the moment; is the new added class conflicts the hierachy of CM > TD > TP?
+    # Function verifySeance: to verify the condition before adding a class to csv, including whether the time table
+    # is free or not at the moment; is the new class conflicts the hierarchy of CM > TD > TP?
     def verifySeance(self):
         pass
 
