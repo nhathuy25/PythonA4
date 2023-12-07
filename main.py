@@ -85,40 +85,51 @@ def convertJour(s: str):
 def ajouteSeance():
     ### Pick up values:
     # Check if any field is missing:
-    if combo_seance.get() != '' and r.get() != 0 and seance1.get() != 0 and jour1.get() != '':
+    if combo_seance.get() != '' and r.get() != 0 and seance1.get() != '' and jour1.get() != '':
         id_matiere = getIdSeance(combo_seance.get())  # an integer define id of the seance
         type_seance = checkType(r.get())  # string ('CM', 'TD', 'TP')
         num_seance = int(seance1.get())  # number of the seance in the day
         num_jour = convertJour(jour1.get())  # an integer from 1 to 7 indicate from Monday to Sunday
         num_semaine = int(semaine1.get())  # number of week
-        num_classes = int(id_type.get())    # number of the class: TD (from 1 to 3) or TP (from 1 to 6)
+
     # if one or more fields are missing, send error
     else:
         tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
-    addSeance = True
-    # - Add new verify condition here
 
+    # If-else condition to save the class' number
+    if (type_seance=='TD' or type_seance=='TP') and id_type.get()!='':
+        num_classe = int(id_type.get())  # number of the class: TD (from 1 to 3) or TP (from 1 to 6)
+    elif type_seance=='CM':
+        num_classe=0    # Need to check again if it causes any error?
+    else:
+        tk.messagebox.showerror(message=f'Please fill in the {type_seance} class number', title="Error")
+    addSeance = True
+    # Create a new class from input data to be verified:
+    nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour,
+                                    numSeance=num_seance, numClasse=num_classe)
+    # - Add new verify condition here
+    addSeance = nouveau_seance.verifySeance('./ListeSeances.csv')
+    #
     if addSeance:
         # Write the input class to a new file csv called: 'ListeSeances.csv'
-        nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour,
-                                        numSeance=num_seance)
-        nouveau_seance.writeToCsv('./ListeSeances.csv') \
+        nouveau_seance.writeToCsv('./ListeSeances.csv')
             # Then, update the actual hour of the subject left by referencing the id of the subject:
         for mat in matieres.listeM:
             if nouveau_seance.id == mat.id:
                 if nouveau_seance.type == 'CM':
-                    mat.heureCM -= 2
+                    mat.heureCM -= 1
                 # Similarly to other type of class
                 if nouveau_seance.type == 'TD':
-                    mat.heureTD -= 2
+                    mat.heureTD -= 1
                 if nouveau_seance.type == 'TP':
-                    mat.heureTP -= 2
+                    mat.heureTP -= 1
 
     num = int(nouveau_seance.id)
 
     # Test function: to print out the current statistics of the subject
     label1.config(
-        text=f'{nouveau_seance.id} added! {matieres.listeM[num].heureCM}; {matieres.listeM[num].heureTD}; {matieres.listeM[num].heureTP}')
+        text=f'{nouveau_seance.id} added! {matieres.listeM[num].heureCM}; {matieres.listeM[num].heureTD}; {matieres.listeM[num].heureTP}',
+        font=('Arial', 18))
 
 
 # Add seance

@@ -2,12 +2,6 @@ from enum import Enum, auto
 import numpy as np
 import csv
 
-class TypeDeClass:
-    def __init__(self, id_TD=0, id_TP=0):
-        self.id_TD = id_TD
-        self.id_TP = id_TP
-
-
 class Matiere:
     def __init__(self, id:int, nom='', heureCM=0, heureTD=0, heureTP=0):
         self.id = id
@@ -23,15 +17,16 @@ class Matiere:
         return self.nom+';'+str(self.heureCM)
 
 class Seance:
-    def __init__(self, id:int, type:str, numSemaine:int, numJour:int, numSeance:int):
+    def __init__(self, id:int, type:str, numSemaine:int, numJour:int, numSeance:int, numClasse=0):
         self.id=id
         self.type=type
         self.numSemaine=numSemaine
         self.numJour=numJour
         self.numSeance=numSeance
+        self.numClasse=numClasse
 
     def stringForCsv(self):
-        return [self.id, self.type, self.numSemaine, self.numJour, self.numSeance]
+        return [self.id, self.type, self.numSemaine, self.numJour, self.numSeance, self.numClasse]
 
     def writeToCsv(self, filename):
         #Write a new line of class into the file
@@ -43,8 +38,24 @@ class Seance:
 
     # Function verifySeance: to verify the condition before adding a class to csv, including whether the time table
     # is free or not at the moment; is the new class conflicts the hierarchy of CM > TD > TP?
-    def verifySeance(self):
-        pass
+    def verifySeance(self, fileListeSeance):
+        file=open(fileListeSeance, 'r')
+        line=file.readline()
+        verified=True
+        lineNumber=1
+        while line!='':
+            line.strip('"')
+            if line!='' and line[0]!='#':
+                fields=line.split(';')
+                # 1- Verify if the class is already added:
+                if self.id==int(fields[0]) and self.type==fields[1] and self.numSemaine==int(fields[2]) and self.numJour==int(fields[3]) and self.numSeance==int(fields[4]) and self.numClasse==int(fields[5]):
+                    verified=False
+                # 2- Condition CM>TD>TP
+                if self.id==int(fields[0]) and self.type==fields[1] and self.numSemaine==int(fields[2]) and self.numJour==int(fields[3]) and self.numSeance==int(fields[4]):
+                    if self.numClasse > int(fields[5]):
+                        verified=False
+        return verified
+
 
     def  __repr__(self):
         return f'ID: {self.id}, hCM: {self.heureCM}'
@@ -104,6 +115,31 @@ class ListeDeMatiere:
         for mat in self.listeM:
             s+=repr(mat)+'\n'
         return s
+
+
+class ListeDeSeance:
+    def __init__(self):
+        self.listeSeance=[]
+
+    def readFromCsv(self):
+        file = open('./ListeSeances.csv', 'r')
+        line=file.readline()
+        lineNumber=1
+
+        while line!='':
+            line=line.strip('"')
+            if line!='' and line[0]!='#':
+                fields=line.split(';')
+                addSeance=True
+
+                if addSeance:
+                    self.listeSeance.append(Seance(id=int(fields[0]), type=fields[1], numSemaine=int(fields[2]), numJour=int(fields[3])
+                                                   , numSeance=int(fields[4]), numClasse=int(fields[5])))
+            line=file.readline()
+            lineNumber+=1
+        file.close()
+        return True
+
 
 jours = ["Lundi", "Mardi", "Mecredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 
