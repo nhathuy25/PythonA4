@@ -38,6 +38,7 @@ class Seance:
 
     # Function verifySeance: to verify the condition before adding a class to csv, including whether the time table
     # is free or not at the moment; is the new class conflicts the hierarchy of CM > TD > TP?
+    # PROBLEM: CAUSING OVERFLOW EACH TIME CONDUCTING VERIFICATION
     def verifySeance(self, fileListeSeance):
         file=open(fileListeSeance, 'r')
         line=file.readline()
@@ -159,6 +160,4 @@ class Semaine:
 
 col = ListeDeMatiere()
 col.readFromCsv('./ListeDeMatiere.csv')
-
-col1= ListeDeMatiere()
 

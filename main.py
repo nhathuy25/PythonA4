@@ -103,17 +103,19 @@ def ajouteSeance():
         num_classe=0    # Need to check again if it causes any error?
     else:
         tk.messagebox.showerror(message=f'Please fill in the {type_seance} class number', title="Error")
+
     addSeance = True
     # Create a new class from input data to be verified:
     nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour,
                                     numSeance=num_seance, numClasse=num_classe)
     # - Add new verify condition here
-    addSeance = nouveau_seance.verifySeance('./ListeSeances.csv')
+    #addSeance = nouveau_seance.verifySeance('./ListeSeances.csv')
     #
     if addSeance:
         # Write the input class to a new file csv called: 'ListeSeances.csv'
         nouveau_seance.writeToCsv('./ListeSeances.csv')
             # Then, update the actual hour of the subject left by referencing the id of the subject:
+            # PROBLEM: HAVEN'T REDUCE THE HOURS BASE ON ID OF CLASS TD/TP
         for mat in matieres.listeM:
             if nouveau_seance.id == mat.id:
                 if nouveau_seance.type == 'CM':
@@ -133,8 +135,8 @@ def ajouteSeance():
 
 
 # Add seance
-lable_seance = tb.Label(tab1, text="Selecter la seance:", font=('Arial', 11, 'italic'))
-lable_seance.grid(row=3, pady=10)
+label_seance = tb.Label(tab1, text="Selecter la seance:", font=('Arial', 11, 'italic'))
+label_seance.grid(row=3, pady=10)
 
 combo_seance = tb.Combobox(tab1, bootstyle='secondary', values=Classes.col.listeM)
 combo_seance.grid(row=3, column=1)
