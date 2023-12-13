@@ -1,5 +1,7 @@
 from enum import Enum, auto
 import numpy as np
+import tkinter as tk
+from tkinter import messagebox
 import csv
 
 class Matiere:
@@ -7,8 +9,8 @@ class Matiere:
         self.id = id
         self.nom = nom
         self.heureCM = heureCM
-        self.heureTD=heureTD
-        self.heureTP=heureTP
+        self.heureTD = heureTD
+        self.heureTP = heureTP
 
     def __repr__(self):
         return self.nom
@@ -33,8 +35,6 @@ class Seance:
         with open(filename, 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile, delimiter=';')
             csv_writer.writerow(self.stringForCsv())
-        # - After that, remove the existing hour of the class base on the type (CM, TD, TP)
-
 
     # Function verifySeance: to verify the condition before adding a class to csv, including whether the time table
     # is free or not at the moment; is the new class conflicts the hierarchy of CM > TD > TP?
@@ -48,15 +48,26 @@ class Seance:
             line.strip('"')
             if line!='' and line[0]!='#':
                 fields=line.split(';')
-                # 1- Verify if the class is already added:
+                # 1st condition: Verify if the same class is already added:
                 if self.id==int(fields[0]) and self.type==fields[1] and self.numSemaine==int(fields[2]) and self.numJour==int(fields[3]) and self.numSeance==int(fields[4]) and self.numClasse==int(fields[5]):
                     verified=False
-                # 2- Condition CM>TD>TP
-                if self.id==int(fields[0]) and self.type==fields[1] and self.numSemaine==int(fields[2]) and self.numJour==int(fields[3]) and self.numSeance==int(fields[4]):
-                    if self.numClasse > int(fields[5]):
-                        verified=False
-        return verified
+                    tk.messagebox.showerror(message=f'There is already a same class of {col.listeM[int(fields[0])]}',
+                                            title="Error")
+                    return verified
 
+                # 2nd condition: CM>TD>TP
+                elif self.numSemaine==int(fields[2]) and self.numJour==int(fields[3]) and self.numSeance==int(fields[4]):
+                    if fields[1] == 'CM':
+                        verified = False
+                        tk.messagebox.showerror(message=f'There is already a CM of {col.listeM[int(fields[0])]}', title="Error")
+                        return verified
+                    elif fields[1] == 'TD' and ((self.type == 'TD' and self.numClasse == int(fields[5])) or self.type != 'TD'):
+                        verified = False
+                        tk.messagebox.showerror(message=f'There is already a class {fields[1]} of {col.listeM[int(fields[0])]}', title="Error")
+                        return verified
+            line=file.readline()
+            lineNumber+=1
+        return verified
 
     def  __repr__(self):
         return f'ID: {self.id}, hCM: {self.heureCM}'

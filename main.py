@@ -117,21 +117,23 @@ def ajouteSeance():
             # Then, update the actual hour of the subject left by referencing the id of the subject:
             # PROBLEM: HAVEN'T REDUCE THE HOURS BASE ON ID OF CLASS TD/TP
         for mat in matieres.listeM:
+            # Verify first if there is available class left to add
+
             if nouveau_seance.id == mat.id:
-                if nouveau_seance.type == 'CM':
+                if nouveau_seance.type == 'CM' and mat.heureCM > 0:
                     mat.heureCM -= 1
-                # Similarly to other type of class
-                if nouveau_seance.type == 'TD':
+                elif nouveau_seance.type == 'TD' and mat.heureTD > 0:
                     mat.heureTD -= 1
-                if nouveau_seance.type == 'TP':
+                elif nouveau_seance.type == 'TP' and mat.heureTP > 0:
                     mat.heureTP -= 1
+                else:   # If cannot add in a new class since there is no available class left, send error message
+                    tk.messagebox.showerror(message=f'There is no class {nouveau_seance.type} of {mat.nom} left!')
 
-    num = int(nouveau_seance.id)
-
-    # Test function: to print out the current statistics of the subject
-    label1.config(
-        text=f'{nouveau_seance.id} added! {matieres.listeM[num].heureCM}; {matieres.listeM[num].heureTD}; {matieres.listeM[num].heureTP}',
-        font=('Arial', 18))
+        # Test function: to print out the current statistics of the subject
+        num = int(nouveau_seance.id)
+        label1.config(
+            text=f'{nouveau_seance.type} of {matieres.listeM[nouveau_seance.id]} added! Class left: CM[{matieres.listeM[num].heureCM}] TD[{matieres.listeM[num].heureTD}] TP[{matieres.listeM[num].heureTP}]',
+            font=('Arial', 13))
 
 
 # Add seance
