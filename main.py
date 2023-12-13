@@ -104,12 +104,12 @@ def ajouteSeance():
     else:
         tk.messagebox.showerror(message=f'Please fill in the {type_seance} class number', title="Error")
 
-    addSeance = True
+    #addSeance = True
     # Create a new class from input data to be verified:
     nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour,
                                     numSeance=num_seance, numClasse=num_classe)
     # - Add new verify condition here
-    #addSeance = nouveau_seance.verifySeance('./ListeSeances.csv')
+    addSeance = nouveau_seance.verifySeance('./ListeSeances.csv')
     #
     if addSeance:
         # Write the input class to a new file csv called: 'ListeSeances.csv'
