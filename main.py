@@ -5,6 +5,7 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 import ttkbootstrap as tb
 
+
 root = tb.Window(themename="cosmo")
 # App interface:
 root.title("Gestion d'emploi du temps")
@@ -38,11 +39,9 @@ my_notebook.add(tab2, text="Supprimer une séance")
 my_notebook.add(tab3, text="Déplacer une séance")
 
 
-### AJOUTER SEANCES
+### FONCTIONS
 
-##Fonctions:
-
-# getIdSeance takes a string which is the name of seance and convert it to index of it in listM
+# getIdSeance takes a string which is the name of the class (seance) and convert it to index of it in listM
 def getIdSeance(nom: str):
     arr = []
     founded = False
@@ -97,28 +96,27 @@ def ajouteSeance():
         tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
 
     # If-else condition to save the class' number
-    if (type_seance=='TD' or type_seance=='TP') and id_type.get()!='':
+    if (type_seance == 'TD' or type_seance == 'TP') and id_type.get() != '':
         num_classe = int(id_type.get())  # number of the class: TD (from 1 to 3) or TP (from 1 to 6)
-    elif type_seance=='CM':
-        num_classe=0    # Need to check again if it causes any error?
+    elif type_seance == 'CM':
+        num_classe = 0
     else:
         tk.messagebox.showerror(message=f'Please fill in the {type_seance} class number', title="Error")
 
-    #addSeance = True
+    # addSeance = True
     # Create a new class from input data to be verified:
     nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour,
                                     numSeance=num_seance, numClasse=num_classe)
     # - Add new verify condition here
     addSeance = nouveau_seance.verifySeance('./ListeSeances.csv')
-    #
+
     if addSeance:
         # Write the input class to a new file csv called: 'ListeSeances.csv'
         nouveau_seance.writeToCsv('./ListeSeances.csv')
-            # Then, update the actual hour of the subject left by referencing the id of the subject:
-            # PROBLEM: HAVEN'T REDUCE THE HOURS BASE ON ID OF CLASS TD/TP
+        # Then, update the actual hour of the subject left by referencing the id of the subject:
+        # PROBLEM: HAVEN'T REDUCE THE HOURS BASE ON ID OF CLASS TD/TP
         for mat in matieres.listeM:
             # Verify first if there is available class left to add
-
             if nouveau_seance.id == mat.id:
                 if nouveau_seance.type == 'CM' and mat.heureCM > 0:
                     mat.heureCM -= 1
@@ -126,9 +124,8 @@ def ajouteSeance():
                     mat.heureTD -= 1
                 elif nouveau_seance.type == 'TP' and mat.heureTP > 0:
                     mat.heureTP -= 1
-                else:   # If cannot add in a new class since there is no available class left, send error message
+                else:  # If cannot add in a new class since there is no available class left, send error message
                     tk.messagebox.showerror(message=f'There is no class {nouveau_seance.type} of {mat.nom} left!')
-
         # Test function: to print out the current statistics of the subject
         num = int(nouveau_seance.id)
         label1.config(
@@ -136,8 +133,29 @@ def ajouteSeance():
             font=('Arial', 13))
 
 
+def supprimeSeance():
+    if semaine2.get() != '' and seance2.get() != '' and jour2.get() != '':
+        num_seance = int(seance2.get())  # number of the seance in the day
+        num_jour = convertJour(jour2.get())  # an integer from 1 to 7 indicate from Monday to Sunday
+        num_semaine = int(semaine2.get())  # number of week
+    # if one or more fields are missing, send error
+    else:
+        tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
+    delSeance = False
+    seance_supprime = Classes.Seance(id=99, type='', numSemaine=num_semaine, numJour=num_jour, numSeance=num_seance, numClasse=0)
+    delSeance = seance_supprime.deleteSeance()
+
+    if delSeance:
+        num = int(seance_supprime.id)
+        label1.config(text=f'A class in S{num_semaine}, {jour2.get()}, No class: {num_seance} deleted!', font=('Arial', 13))
+    else:
+        label1.config(text='')
+
+
+
+## USER INTERFACE
 # Add seance
-label_seance = tb.Label(tab1, text="Selecter la seance:", font=('Arial', 11, 'italic'))
+label_seance = tb.Label(tab1, text="Selectionner la matière:", font=('Arial', 11, 'italic'))
 label_seance.grid(row=3, pady=10)
 
 combo_seance = tb.Combobox(tab1, bootstyle='secondary', values=Classes.col.listeM)
@@ -149,18 +167,9 @@ label_radio.grid(row=3, column=4, padx=30)
 
 r = IntVar()  # A continously changing variable keep track the value of the radiobuttons
 
-
-def Clicked(value):
-    # tk.messagebox.showinfo(title="Radiobutton", message=f'{value} clicked')
-    pass
-
-
-tb.Radiobutton(tab1, text="CM  ", bootstyle="secondary", variable=r, value=1, command=lambda: Clicked(r.get())).grid(
-    row=3, column=5)
-tb.Radiobutton(tab1, text="TD  ", bootstyle="secondary", variable=r, value=2, command=lambda: Clicked(r.get())).grid(
-    row=3, column=6)
-tb.Radiobutton(tab1, text="TP  ", bootstyle="secondary", variable=r, value=3, command=lambda: Clicked(r.get())).grid(
-    row=3, column=7)
+tb.Radiobutton(tab1, text="CM  ", bootstyle="secondary", variable=r, value=1).grid(row=3, column=5)
+tb.Radiobutton(tab1, text="TD  ", bootstyle="secondary", variable=r, value=2).grid(row=3, column=6)
+tb.Radiobutton(tab1, text="TP  ", bootstyle="secondary", variable=r, value=3).grid(row=3, column=7)
 
 # Label and entry of the number week
 label_semaine = tb.Label(tab1, text="Saisir la semaine: ", font=('Arial', 11, 'italic'))
@@ -193,6 +202,50 @@ seance1.grid(row=6, column=1)
 # Button to submit the form
 button1 = tb.Button(tab1, text="Ajouter", bootstyle="primary", command=lambda: ajouteSeance())
 button1.grid(row=7, column=3, pady=10)
+
+
+
+# SUPRIMMER UNE SEANCE
+label_seance2 = tb.Label(tab2, text="Selectionner la matière:", font=('Arial', 11, 'italic'))
+label_seance2.grid(row=3, pady=10)
+
+combo_seance2 = tb.Combobox(tab2, bootstyle='secondary', values=Classes.col.listeM)
+combo_seance2.grid(row=3, column=1)
+
+label_radio2 = tb.Label(tab2, text="Type: ", font=('Arial', 11, 'italic'))
+label_radio2.grid(row=3, column=4, padx=30)
+
+tb.Radiobutton(tab2, text="CM  ", bootstyle="secondary", variable=r, value=1).grid(row=3, column=5)
+tb.Radiobutton(tab2, text="TD  ", bootstyle="secondary", variable=r, value=2).grid(row=3, column=6)
+tb.Radiobutton(tab2, text="TP  ", bootstyle="secondary", variable=r, value=3).grid(row=3, column=7)
+
+label_semaine2 = tb.Label(tab2, text="Saisir la semaine: ", font=('Arial', 11, 'italic'))
+label_semaine2.grid(row=4, pady=10)
+
+semaine2 = tb.Entry(tab2, bootstyle="secondary")
+semaine2.grid(row=4, column=1, ipadx=8.5)
+
+label_idtype2 = tb.Label(tab2, text="Numéro de TP/TD", font=('Arial', 11, 'italic'))
+label_idtype2.grid(row=4, column=4)
+
+id_type2 = tb.Entry(tab2, bootstyle="secondary")
+id_type2.grid(row=4, column=6)
+
+label_jour2 = tb.Label(tab2, text=" Jour de semaine: ", font=('Arial', 11, 'italic'))
+label_jour2.grid(row=5)
+
+jour2 = tb.Combobox(tab2, bootstyle='secondary', values=Classes.jours)
+jour2.grid(row=5, column=1)
+
+label_numSeance2 = tb.Label(tab2, text="Numero de la seance: ", font=('Arial', 11, 'italic'))
+label_numSeance2.grid(row=6, pady=10)
+
+seance2 = tb.Combobox(tab2, bootstyle="secondary", values=[1, 2, 3, 4])
+seance2.grid(row=6, column=1)
+
+button2 = tb.Button(tab2, text="Supprimer", bootstyle="primary", command=lambda: supprimeSeance())
+button2.grid(row=7, column=3, pady=10)
+
 
 ### Testing
 label1 = tb.Label(bootstyle='success')

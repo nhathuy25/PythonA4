@@ -3,6 +3,8 @@ import numpy as np
 import tkinter as tk
 from tkinter import messagebox
 import csv
+#Pandas library to delete single
+import pandas as pd
 
 class Matiere:
     def __init__(self, id:int, nom='', heureCM=0, heureTD=0, heureTP=0):
@@ -67,7 +69,31 @@ class Seance:
                         return verified
             line=file.readline()
             lineNumber+=1
+        file.close()
         return verified
+
+    # Function deleteSeance: to delete a class from inputs of the program
+    def deleteSeance(self):
+        file = open('./ListeSeances.csv', 'r+')
+        line = file.readline()
+        deleted = False
+        lineNumber = 0
+        while line != '':
+            line.strip('"')
+            if line != '' and line[0] != '#':
+                fields = line.split(';')
+                if self.numSemaine==int(fields[2]) and self.numJour==int(fields[3]) and self.numSeance==int(fields[4]):
+                    df = pd.read_csv('./ListeSeances.csv',delimiter="'")
+                    df = df.drop(df.index[lineNumber-1])
+                    df = df.reset_index(drop=True)
+                    df.to_csv('./ListeSeances.csv', index=False, sep="'")
+                    deleted = True
+                    tk.messagebox.showinfo(title='Delete a class', message=f'Deleted {col.listeM[int(fields[0])].nom} {fields[1]}!')
+                    return deleted
+            line = file.readline()
+            lineNumber+=1
+        file.close()
+        return deleted
 
     def  __repr__(self):
         return f'ID: {self.id}, hCM: {self.heureCM}'
@@ -107,7 +133,6 @@ class ListeDeMatiere:
                 fields = line.split(';')
                 addSeance = True
                 # Dieu kien de addseance
-
                 if addSeance:
                     seance = Seance(id=int(fields[0]), type=fields[1], numSemaine=int(fields[2]), numSeance=int(fields[3]), numJour=int(fields[4]))
                     for mat in self.listeM:
@@ -121,6 +146,7 @@ class ListeDeMatiere:
 
             line = file.readline()
             lineNumber += 1
+        file.close()
 
     def __repr__(self):
         s=''
