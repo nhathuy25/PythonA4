@@ -108,7 +108,7 @@ def ajouteSeance():
     nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour,
                                     numSeance=num_seance, numClasse=num_classe)
     # - Add new verify condition here
-    addSeance = nouveau_seance.verifySeance('./ListeSeances.csv')
+    addSeance = nouveau_seance.verifySeance()
 
     if addSeance:
         # Write the input class to a new file csv called: 'ListeSeances.csv'
@@ -141,16 +141,26 @@ def supprimeSeance():
     # if one or more fields are missing, send error
     else:
         tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
-    delSeance = False
+    #delSeance = False
+    # For the selected class, we only care about the date and number of class of it
     seance_supprime = Classes.Seance(id=99, type='', numSemaine=num_semaine, numJour=num_jour, numSeance=num_seance, numClasse=0)
     delSeance = seance_supprime.deleteSeance()
 
-    if delSeance:
+    if delSeance!=0:
         num = int(seance_supprime.id)
         label1.config(text=f'A class in S{num_semaine}, {jour2.get()}, No class: {num_seance} deleted!', font=('Arial', 13))
+        # After remove the class selected, update the current hour left of the subject
+        for mat in matieres.listeM:
+            if mat.id == int(delSeance[0]):
+                if delSeance[1] == 'CM':
+                    mat.heureCM += 1
+                elif delSeance[1] == 'TD':
+                    mat.heureTD += 1
+                elif delSeance[1] == 'TP':
+                    mat.heureTP += 1
+
     else:
         label1.config(text='')
-
 
 
 ## USER INTERFACE
@@ -204,7 +214,6 @@ button1 = tb.Button(tab1, text="Ajouter", bootstyle="primary", command=lambda: a
 button1.grid(row=7, column=3, pady=10)
 
 
-
 # SUPRIMMER UNE SEANCE
 
 label_semaine2 = tb.Label(tab2, text="Saisir la semaine: ", font=('Arial', 11, 'italic'))
@@ -227,6 +236,9 @@ seance2.grid(row=6, column=1)
 
 button2 = tb.Button(tab2, text="Supprimer", bootstyle="primary", command=lambda: supprimeSeance())
 button2.grid(row=7, column=3, pady=10)
+
+
+# DEPLACER UNE SEANCE
 
 
 ### Testing

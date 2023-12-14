@@ -41,8 +41,8 @@ class Seance:
     # Function verifySeance: to verify the condition before adding a class to csv, including whether the time table
     # is free or not at the moment; is the new class conflicts the hierarchy of CM > TD > TP?
     # PROBLEM: CAUSING OVERFLOW EACH TIME CONDUCTING VERIFICATION
-    def verifySeance(self, fileListeSeance):
-        file=open(fileListeSeance, 'r')
+    def verifySeance(self):
+        file=open('./ListeSeances.csv', 'r')
         line=file.readline()
         verified=True
         lineNumber=1
@@ -83,17 +83,22 @@ class Seance:
             if line != '' and line[0] != '#':
                 fields = line.split(';')
                 if self.numSemaine==int(fields[2]) and self.numJour==int(fields[3]) and self.numSeance==int(fields[4]):
+                    # Using library pandas to remove class directly in the csv file without creating a new one
+                    # First by read the csv file into pandas DataFrame
                     df = pd.read_csv('./ListeSeances.csv',delimiter="'")
+                    #Delete a row base on it's line number
                     df = df.drop(df.index[lineNumber-1])
+                    # Reset the index to avoid gaps
                     df = df.reset_index(drop=True)
                     df.to_csv('./ListeSeances.csv', index=False, sep="'")
                     deleted = True
                     tk.messagebox.showinfo(title='Delete a class', message=f'Deleted {col.listeM[int(fields[0])].nom} {fields[1]}!')
-                    return deleted
+                    # Function return fields with all the infomation of the class to update hour in main.py
+                    return fields
             line = file.readline()
             lineNumber+=1
         file.close()
-        return deleted
+        return 0
 
     def  __repr__(self):
         return f'ID: {self.id}, hCM: {self.heureCM}'
