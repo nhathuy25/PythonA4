@@ -13,9 +13,9 @@ root.iconbitmap("./logo.png")
 root.geometry('1000x500')
 
 # Copyright label
-licenses = tb.Label(text="© Designed by Huy NGUYEN and Khoa VU - 4A INSA CVL 2023",
+copyright_label = tb.Label(text="© Designed by Huy NGUYEN and Khoa VU - 4A INSA CVL 2023",
                     font=('Times new roman', 10, 'italic'))
-licenses.grid(row=1)
+copyright_label.grid(row=1)
 
 ###     INITIALISATION OF VARIABLES:
 # Initialisation of 2D list called sem:
@@ -79,11 +79,26 @@ def convertJour(s: str):
     index = Classes.jours.index(s)
     return index + 1
 
+# Function searchSeance(): find the class base on date and time, return all the class' information
+def searchSeance(numSemaine, numJour, numSeance):
+    file = open('./listeSeances.csv', 'r')
+    line = file.readline()
+    lineNumber=1
+    while line != '':
+        if line !='' and line[0] != '#':
+            fields = line.split(';')
+            if numSemaine==int(fields[2]) and numJour==int(fields[3]) and numSeance==int(fields[4]):
+                return Classes.Seance(id=int(fields[0]), type=fields[1], numSemaine=int(fields[2]), numJour=int(fields[3]), numSeance=int(fields[4]), numClasse=int(fields[5]))
+        line = file.readline()
+        lineNumber += 1
+    file.close()
+    # if cannot find the class correspondant, return 0 value
+    return 0
 
 # Function ajouteSeance (IMPORTANT) is served to take all the data from API and stocked into a .csv file the new class information
 def ajouteSeance():
     ### Pick up values:
-    # Check if any field is missing:
+    # Check if any input field is missing:
     if combo_seance.get() != '' and r.get() != 0 and seance1.get() != '' and jour1.get() != '':
         id_matiere = getIdSeance(combo_seance.get())  # an integer define id of the seance
         type_seance = checkType(r.get())  # string ('CM', 'TD', 'TP')
@@ -91,7 +106,7 @@ def ajouteSeance():
         num_jour = convertJour(jour1.get())  # an integer from 1 to 7 indicate from Monday to Sunday
         num_semaine = int(semaine1.get())  # number of week
 
-    # if one or more fields are missing, send error
+    # if one or more than one field is missing, send an error message
     else:
         tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
 
@@ -126,7 +141,7 @@ def ajouteSeance():
                     mat.heureTP -= 1
                 else:  # If cannot add in a new class since there is no available class left, send error message
                     tk.messagebox.showerror(message=f'There is no class {nouveau_seance.type} of {mat.nom} left!')
-        # Test function: to print out the current statistics of the subject
+        # Test function: to print out the current statistics of the subject by update the label1
         num = int(nouveau_seance.id)
         label1.config(
             text=f'{nouveau_seance.type} of {matieres.listeM[nouveau_seance.id]} added! Class left: CM[{matieres.listeM[num].heureCM}] TD[{matieres.listeM[num].heureTD}] TP[{matieres.listeM[num].heureTP}]',
@@ -144,6 +159,7 @@ def supprimeSeance():
     #delSeance = False
     # For the selected class, we only care about the date and number of class of it
     seance_supprime = Classes.Seance(id=99, type='', numSemaine=num_semaine, numJour=num_jour, numSeance=num_seance, numClasse=0)
+    # Delete class, assign the seance returned into delSeance to verify
     delSeance = seance_supprime.deleteSeance()
 
     if delSeance!=0:
@@ -161,6 +177,64 @@ def supprimeSeance():
 
     else:
         label1.config(text='')
+
+def deplaceSeance():
+    # Take the infomations typed in UI
+    if semaine3.get() != '' and seance3.get() != '' and jour3.get() != '' and semaine4.get() != '' and seance4.get() != '' and jour4.get() != '':
+        # date and time (1)
+        num_seance1 = int(seance3.get())  # number of the seance in the day
+        num_jour1 = convertJour(jour3.get())  # an integer from 1 to 7 indicate from Monday to Sunday
+        num_semaine1 = int(semaine3.get())  # number of week
+
+        # date and time (2)
+        num_seance2 = int(seance4.get())  # number of the seance in the day
+        num_jour2 = convertJour(jour4.get())  # an integer from 1 to 7 indicate from Monday to Sunday
+        num_semaine2 = int(semaine4.get())  # number of week
+
+    # if one or more than one field is missing, send an error message:
+    else:
+        tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
+    seance_temp = searchSeance(num_semaine1, num_jour1, num_seance1)
+    nouv_seance = Classes.Seance(id=seance_temp.id, type=seance_temp.type, numSemaine=num_semaine2, numJour=num_jour2, numSeance=num_seance2, numClasse=seance_temp.numClasse)
+    addSeance = nouv_seance.verifySeance()
+
+    if seance_temp != 0 and addSeance:
+        label1.config(text="seance found!")
+        seance_temp.deleteSeance()
+        for mat in matieres.listeM:
+            if mat.id == int(seance_temp.id):
+                if seance_temp.type == 'CM':
+                    mat.heureCM += 1
+                elif seance_temp.type == 'TD':
+                    mat.heureTD += 1
+                elif seance_temp.type == 'TP':
+                    mat.heureTP += 1
+
+        # Write the input class to a new file csv called: 'ListeSeances.csv'
+        nouv_seance.writeToCsv('./ListeSeances.csv')
+        # Then, update the actual hour of the subject left by referencing the id of the subject:
+        # PROBLEM: HAVEN'T REDUCE THE HOURS BASE ON ID OF CLASS TD/TP
+        for mat in matieres.listeM:
+            # Verify first if there is available class left to add
+            if nouv_seance.id == mat.id:
+                if nouv_seance.type == 'CM' and mat.heureCM > 0:
+                    mat.heureCM -= 1
+                elif nouv_seance.type == 'TD' and mat.heureTD > 0:
+                    mat.heureTD -= 1
+                elif nouv_seance.type == 'TP' and mat.heureTP > 0:
+                    mat.heureTP -= 1
+                else:  # If cannot add in a new class since there is no available class left, send error message
+                    tk.messagebox.showerror(message=f'There is no class {nouv_seance.type} of {mat.nom} left!')
+        # Test function: to print out the current statistics of the subject by update the label1
+        num = int(nouv_seance.id)
+        label1.config(
+            text=f'{nouv_seance.type} of {matieres.listeM[nouv_seance.id]} replaced! Class left: CM[{matieres.listeM[num].heureCM}] TD[{matieres.listeM[num].heureTD}] TP[{matieres.listeM[num].heureTP}]',
+            font=('Arial', 13))
+
+    elif seance_temp == 0:
+        label1.config(text="Seance not found!")
+
+
 
 
 ## USER INTERFACE
@@ -239,6 +313,53 @@ button2.grid(row=7, column=3, pady=10)
 
 
 # DEPLACER UNE SEANCE
+
+label_date1 = tb.Label(tab3, text="Info de la séance (1)", font=('Arial', 11, 'italic'))
+label_date1.grid(row=1)
+
+label_date2 = tb.Label(tab3, text="Info de la séance (2)", font=('Arial', 11, 'italic'))
+label_date2.grid(row=1, column=2)
+
+# Date and time (1)
+label_semaine3 = tb.Label(tab3, text="Saisir la semaine: ", font=('Arial', 11, 'italic'))
+label_semaine3.grid(row=4, padx=30, pady=10)
+
+semaine3 = tb.Entry(tab3, bootstyle="secondary")
+semaine3.grid(row=4, column=1, ipadx=8.5)
+
+label_jour3 = tb.Label(tab3, text=" Jour de semaine: ", font=('Arial', 11, 'italic'))
+label_jour3.grid(row=5)
+
+jour3 = tb.Combobox(tab3, bootstyle='secondary', values=Classes.jours)
+jour3.grid(row=5, column=1)
+
+label_numSeance3 = tb.Label(tab3, text="Numero de la seance: ", font=('Arial', 11, 'italic'))
+label_numSeance3.grid(row=6, pady=10)
+
+seance3 = tb.Combobox(tab3, bootstyle="secondary", values=[1, 2, 3, 4])
+seance3.grid(row=6, column=1)
+
+button3 = tb.Button(tab3, text="Déplacer", bootstyle="primary", command=lambda: deplaceSeance())
+button3.grid(row=7, column=2, pady=10)
+
+# Date and time (2)
+label_semaine4 = tb.Label(tab3, text="Saisir la semaine: ", font=('Arial', 11, 'italic'))
+label_semaine4.grid(row=4, column=2, padx=30)
+
+semaine4 = tb.Entry(tab3, bootstyle="secondary")
+semaine4.grid(row=4, column=3, ipadx=8.5)
+
+label_jour4 = tb.Label(tab3, text=" Jour de semaine: ", font=('Arial', 11, 'italic'))
+label_jour4.grid(row=5, column=2)
+
+jour4 = tb.Combobox(tab3, bootstyle='secondary', values=Classes.jours)
+jour4.grid(row=5, column=3)
+
+label_numSeance4 = tb.Label(tab3, text="Numero de la seance: ", font=('Arial', 11, 'italic'))
+label_numSeance4.grid(row=6, column=2, pady=10)
+
+seance4 = tb.Combobox(tab3, bootstyle="secondary", values=[1, 2, 3, 4])
+seance4.grid(row=6, column=3)
 
 
 ### Testing
