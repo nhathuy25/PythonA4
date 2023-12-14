@@ -1,3 +1,12 @@
+'''
+Description of main.py file:
+Contain the window of the application, with User Interface, define the input fields and their associate functions.
+The principal function of main.py is to do tasks such as adding, deleting or changing a class. Each task associate with
+one function, there are ajouteSeance, supprimeSeance and deplaceSeance.
+
+It exists also other side-functions to help convert the input data to a suitable data type.
+'''
+
 import tkinter.messagebox
 import Classes
 from tkinter import *
@@ -92,6 +101,7 @@ def searchSeance(numSemaine, numJour, numSeance):
         line = file.readline()
         lineNumber += 1
     file.close()
+
     # if cannot find the class correspondant, return 0 value
     return 0
 
@@ -122,12 +132,13 @@ def ajouteSeance():
     # Create a new class from input data to be verified:
     nouveau_seance = Classes.Seance(id=id_matiere, type=type_seance, numSemaine=num_semaine, numJour=num_jour,
                                     numSeance=num_seance, numClasse=num_classe)
-    # - Add new verify condition here
+    # Verify the condition of nouveau_seance before adding it to the timetable
     addSeance = nouveau_seance.verifySeance()
 
-    if addSeance:
+    if addSeance: # If the conditions are satisfied
         # Write the input class to a new file csv called: 'ListeSeances.csv'
         nouveau_seance.writeToCsv('./ListeSeances.csv')
+
         # Then, update the actual hour of the subject left by referencing the id of the subject:
         # PROBLEM: HAVEN'T REDUCE THE HOURS BASE ON ID OF CLASS TD/TP
         for mat in matieres.listeM:
@@ -141,7 +152,8 @@ def ajouteSeance():
                     mat.heureTP -= 1
                 else:  # If cannot add in a new class since there is no available class left, send error message
                     tk.messagebox.showerror(message=f'There is no class {nouveau_seance.type} of {mat.nom} left!')
-        # Test function: to print out the current statistics of the subject by update the label1
+
+        # Result label: to print out the current statistics of the subject by update the label1
         num = int(nouveau_seance.id)
         label1.config(
             text=f'{nouveau_seance.type} of {matieres.listeM[nouveau_seance.id]} added! Class left: CM[{matieres.listeM[num].heureCM}] TD[{matieres.listeM[num].heureTD}] TP[{matieres.listeM[num].heureTP}]',
@@ -149,6 +161,7 @@ def ajouteSeance():
 
 
 def supprimeSeance():
+    # Verify that all the input fields are filled
     if semaine2.get() != '' and seance2.get() != '' and jour2.get() != '':
         num_seance = int(seance2.get())  # number of the seance in the day
         num_jour = convertJour(jour2.get())  # an integer from 1 to 7 indicate from Monday to Sunday
@@ -156,12 +169,13 @@ def supprimeSeance():
     # if one or more fields are missing, send error
     else:
         tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
-    #delSeance = False
+
     # For the selected class, we only care about the date and number of class of it
     seance_supprime = Classes.Seance(id=99, type='', numSemaine=num_semaine, numJour=num_jour, numSeance=num_seance, numClasse=0)
     # Delete class, assign the seance returned into delSeance to verify
     delSeance = seance_supprime.deleteSeance()
 
+    # If we cannot find the class, the function will return value of 0. Else, it will return a variable type Seance
     if delSeance!=0:
         num = int(seance_supprime.id)
         label1.config(text=f'A class in S{num_semaine}, {jour2.get()}, No class: {num_seance} deleted!', font=('Arial', 13))
@@ -175,6 +189,7 @@ def supprimeSeance():
                 elif delSeance[1] == 'TP':
                     mat.heureTP += 1
 
+    # If we can't find a class with the date and time inputs, refresh the label1
     else:
         label1.config(text='')
 
@@ -194,13 +209,23 @@ def deplaceSeance():
     # if one or more than one field is missing, send an error message:
     else:
         tk.messagebox.showerror(message="Please fill in all the info!", title="Error")
+
+    # Assign a temporary class (seance) using the date and time (1) of the class to be moved
     seance_temp = searchSeance(num_semaine1, num_jour1, num_seance1)
+    # Note: Function searchSeance return a variable type Seance base on date and time. This returned variable is found in
+    # in the ListeSeances.csv
+
+    # Create a new class (seance) base on the subject info (taken from seance_temp) and the date and time (2) to replace
     nouv_seance = Classes.Seance(id=seance_temp.id, type=seance_temp.type, numSemaine=num_semaine2, numJour=num_jour2, numSeance=num_seance2, numClasse=seance_temp.numClasse)
+    # Then, verify whether the new class satisfy the adding conditions
     addSeance = nouv_seance.verifySeance()
 
+    # If we found the class to be replaced and the destine date and time (2) is available
     if seance_temp != 0 and addSeance:
         label1.config(text="seance found!")
+        # 1- Remove the class to be changed
         seance_temp.deleteSeance()
+        # 2- Re-increase the number of hour left base on the information of the chosen class (id and type)
         for mat in matieres.listeM:
             if mat.id == int(seance_temp.id):
                 if seance_temp.type == 'CM':
@@ -210,10 +235,10 @@ def deplaceSeance():
                 elif seance_temp.type == 'TP':
                     mat.heureTP += 1
 
-        # Write the input class to a new file csv called: 'ListeSeances.csv'
+        # Write the class with date and time (2) changed to 'ListeSeances.csv' to update
         nouv_seance.writeToCsv('./ListeSeances.csv')
+
         # Then, update the actual hour of the subject left by referencing the id of the subject:
-        # PROBLEM: HAVEN'T REDUCE THE HOURS BASE ON ID OF CLASS TD/TP
         for mat in matieres.listeM:
             # Verify first if there is available class left to add
             if nouv_seance.id == mat.id:
@@ -225,16 +250,16 @@ def deplaceSeance():
                     mat.heureTP -= 1
                 else:  # If cannot add in a new class since there is no available class left, send error message
                     tk.messagebox.showerror(message=f'There is no class {nouv_seance.type} of {mat.nom} left!')
+
         # Test function: to print out the current statistics of the subject by update the label1
         num = int(nouv_seance.id)
         label1.config(
             text=f'{nouv_seance.type} of {matieres.listeM[nouv_seance.id]} replaced! Class left: CM[{matieres.listeM[num].heureCM}] TD[{matieres.listeM[num].heureTD}] TP[{matieres.listeM[num].heureTP}]',
             font=('Arial', 13))
 
+    # If we cannot found the class to be moved base on date and time (1) input, send a message through label1
     elif seance_temp == 0:
         label1.config(text="Seance not found!")
-
-
 
 
 ## USER INTERFACE

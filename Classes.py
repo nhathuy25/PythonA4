@@ -1,5 +1,8 @@
-from enum import Enum, auto
-import numpy as np
+'''
+Description of Classes.py:
+The file include all the classes necessary, and its methods to read/write with .csv file
+'''
+
 import tkinter as tk
 from tkinter import messagebox
 import csv
