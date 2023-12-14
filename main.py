@@ -206,30 +206,12 @@ button1.grid(row=7, column=3, pady=10)
 
 
 # SUPRIMMER UNE SEANCE
-label_seance2 = tb.Label(tab2, text="Selectionner la matière:", font=('Arial', 11, 'italic'))
-label_seance2.grid(row=3, pady=10)
-
-combo_seance2 = tb.Combobox(tab2, bootstyle='secondary', values=Classes.col.listeM)
-combo_seance2.grid(row=3, column=1)
-
-label_radio2 = tb.Label(tab2, text="Type: ", font=('Arial', 11, 'italic'))
-label_radio2.grid(row=3, column=4, padx=30)
-
-tb.Radiobutton(tab2, text="CM  ", bootstyle="secondary", variable=r, value=1).grid(row=3, column=5)
-tb.Radiobutton(tab2, text="TD  ", bootstyle="secondary", variable=r, value=2).grid(row=3, column=6)
-tb.Radiobutton(tab2, text="TP  ", bootstyle="secondary", variable=r, value=3).grid(row=3, column=7)
 
 label_semaine2 = tb.Label(tab2, text="Saisir la semaine: ", font=('Arial', 11, 'italic'))
-label_semaine2.grid(row=4, pady=10)
+label_semaine2.grid(row=4, padx=40, pady=10)
 
 semaine2 = tb.Entry(tab2, bootstyle="secondary")
 semaine2.grid(row=4, column=1, ipadx=8.5)
-
-label_idtype2 = tb.Label(tab2, text="Numéro de TP/TD", font=('Arial', 11, 'italic'))
-label_idtype2.grid(row=4, column=4)
-
-id_type2 = tb.Entry(tab2, bootstyle="secondary")
-id_type2.grid(row=4, column=6)
 
 label_jour2 = tb.Label(tab2, text=" Jour de semaine: ", font=('Arial', 11, 'italic'))
 label_jour2.grid(row=5)
