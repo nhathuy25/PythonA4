@@ -1,10 +1,16 @@
 '''
+Etablissement: INSA Centre Val de Loire
+4A TP2
+Realisateurs: NGUYEN Huu Nhat Huy, VU Khoa
+
 Description of main.py file:
 Contain the window of the application, with User Interface, define the input fields and their associate functions.
 The principal function of main.py is to do tasks such as adding, deleting or changing a class. Each task associate with
 one function, there are ajouteSeance, supprimeSeance and deplaceSeance.
 
 It exists also other side-functions to help convert the input data to a suitable data type.
+
+Library used: ttkbootstrap - A supercharged theme extension for tkinter that enables on-demand modern flat style themes
 '''
 
 import tkinter.messagebox
@@ -26,7 +32,9 @@ copyright_label = tb.Label(text="© Designed by Huy NGUYEN and Khoa VU - 4A INSA
                     font=('Times new roman', 10, 'italic'))
 copyright_label.grid(row=1)
 
-###     INITIALISATION OF VARIABLES:
+
+# INITIALISATION OF VARIABLES:
+
 # Initialisation of 2D list called sem:
 # sem = Classes.Semaine()
 
@@ -48,7 +56,7 @@ my_notebook.add(tab2, text="Supprimer une séance")
 my_notebook.add(tab3, text="Déplacer une séance")
 
 
-### FONCTIONS
+# FUNCTIONS
 
 # getIdSeance takes a string which is the name of the class (seance) and convert it to index of it in listM
 def getIdSeance(nom: str):
@@ -87,6 +95,7 @@ def checkType(id: int):
 def convertJour(s: str):
     index = Classes.jours.index(s)
     return index + 1
+
 
 # Function searchSeance(): find the class base on date and time, return all the class' information
 def searchSeance(numSemaine, numJour, numSeance):
@@ -212,7 +221,7 @@ def deplaceSeance():
 
     # Assign a temporary class (seance) using the date and time (1) of the class to be moved
     seance_temp = searchSeance(num_semaine1, num_jour1, num_seance1)
-    # Note: Function searchSeance return a variable type Seance base on date and time. This returned variable is found in
+    # Note: Function searchSeance return a variable type Seance base on date and time. This returned variable is found
     # in the ListeSeances.csv
 
     # Create a new class (seance) base on the subject info (taken from seance_temp) and the date and time (2) to replace
@@ -274,7 +283,7 @@ combo_seance.grid(row=3, column=1)
 label_radio = tb.Label(tab1, text="Type: ", font=('Arial', 11, 'italic'))
 label_radio.grid(row=3, column=4, padx=30)
 
-r = IntVar()  # A continously changing variable keep track the value of the radiobuttons
+r = IntVar()  # A continuously changing variable keep track the value of the radio buttons
 
 tb.Radiobutton(tab1, text="CM  ", bootstyle="secondary", variable=r, value=1).grid(row=3, column=5)
 tb.Radiobutton(tab1, text="TD  ", bootstyle="secondary", variable=r, value=2).grid(row=3, column=6)

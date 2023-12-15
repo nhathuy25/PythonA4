@@ -1,12 +1,13 @@
 '''
 Description of Classes.py:
 The file include all the classes necessary, and its methods to read/write with .csv file
+Library used: pandas - to delete a row in the same csv file without creating a new one
 '''
 
 import tkinter as tk
 from tkinter import messagebox
 import csv
-#Pandas library to delete single
+# Pandas library to delete single row of data
 import pandas as pd
 
 class Matiere:
