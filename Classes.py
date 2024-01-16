@@ -45,7 +45,6 @@ class Seance:
 
     # Function verifySeance: to verify the condition before adding a class to csv, including whether the time table
     # is free or not at the moment; is the new class conflicts the hierarchy of CM > TD > TP?
-    # PROBLEM: CAUSING OVERFLOW EACH TIME CONDUCTING VERIFICATION
     def verifySeance(self):
         file=open('./ListeSeances.csv', 'r')
         line=file.readline()
@@ -105,10 +104,6 @@ class Seance:
         file.close()
         return 0
 
-    # Function moveSeance: to move a class to another date and time
-    def moveSeance(self):
-        pass
-
     def  __repr__(self):
         return f'ID: {self.id}, hCM: {self.heureCM}'
 
@@ -126,7 +121,9 @@ class ListeDeMatiere:
             if line!='' and line[0]!='#':
                 fields = line.split(';')
                 addMatiere = True
-                #them dieu kien de add Matiere!
+                if len(fields) > 6:
+                    addMatiere = False
+                    tk.messagebox.showerror(message=f'There is {len(fields) - 6} abundant field(s) in line {lineNumber}')
 
                 if addMatiere:
                     self.listeM.append(Matiere(id=int(fields[0]), nom=fields[1], heureCM=int(fields[2]), heureTD=int(fields[3]), heureTP=int(fields[4])))
@@ -146,17 +143,20 @@ class ListeDeMatiere:
             if line != '' and line[0] != '#':
                 fields = line.split(';')
                 addSeance = True
-                # Dieu kien de addseance
+                if len(fields) < 6:
+                    addSeance = False
+                    tk.messagebox.showerror(
+                        message=f'There is {-len(fields) + 6} missing field(s) in line {lineNumber}')
                 if addSeance:
                     seance = Seance(id=int(fields[0]), type=fields[1], numSemaine=int(fields[2]), numSeance=int(fields[3]), numJour=int(fields[4]))
                     for mat in self.listeM:
                         if seance.id == mat.id:
                             if seance.type == 'CM':
-                                mat.heureCM -= 2
+                                mat.heureCM -= 1
                             elif seance.type == 'TD':
-                                pass
+                                mat.heureTD -= 1
                             elif seance.type == 'TP':
-                                pass
+                                mat.heureTP -= 1
 
             line = file.readline()
             lineNumber += 1
@@ -183,7 +183,10 @@ class ListeDeSeance:
             if line!='' and line[0]!='#':
                 fields=line.split(';')
                 addSeance=True
-
+                if len(fields) < 6:
+                    addSeance = False
+                    tk.messagebox.showerror(
+                        message=f'There is {-len(fields) + 6} missing field(s) in line {lineNumber}')
                 if addSeance:
                     self.listeSeance.append(Seance(id=int(fields[0]), type=fields[1], numSemaine=int(fields[2]), numJour=int(fields[3])
                                                    , numSeance=int(fields[4]), numClasse=int(fields[5])))
